@@ -1,0 +1,93 @@
+#!/usr/bin/env python3
+import os
+import argparse
+from sys import stdout
+from ruamel.yaml import YAML
+
+
+def main(args):
+    envs = {}
+    for env in os.environ:
+        if env.startswith(args.prefix):
+            envs[env.replace(args.prefix, '')] = os.environ[env]
+
+    for file in args.files:
+        values_file = ValuesFile(file)
+        for env in envs:
+            try:
+                values_file.find_and_replace(env, envs[env])
+            except NotFound:
+                if args.strict:
+                    print("CRITICAL: Couldn't find variable for {}{}".format(args.prefix, env))
+                    exit(2)
+                else:
+                    print("WARNING: Couldn't find variable for {}{}".format(args.prefix, env))
+            except FoundDict:
+                print("CRITICAL: Found dict under {}{}. Refusing to edit".format(args.prefix, env))
+                exit(2)
+
+        values_file.dump()
+
+
+class ValuesFile():
+    def __init__(self, yaml_file):
+        self.ruamel_yaml = YAML()
+        self.yaml_file = open(yaml_file, "r+")
+        self.yaml_content = self.ruamel_yaml.load(self.yaml_file)
+
+    def find_and_replace(self, env, value, yaml_content=None):
+        if not yaml_content:
+            yaml_content = self.yaml_content
+
+        for node in yaml_content:
+            for candidate in self._parse_candidates(env):
+                if node.lower() == candidate['current'].lower():
+                    if candidate['next']:
+                        return self.find_and_replace(candidate['next'], value, yaml_content[node])
+                    else:
+                        if isinstance(yaml_content[node], dict):
+                            raise FoundDict
+                        yaml_content[node] = value
+                        return
+        raise NotFound()
+
+    def dump(self):
+        self.ruamel_yaml.dump(self.yaml_content, stdout)
+
+    def write(self):
+        self.ruamel_yaml.dump(self.yaml_content, self.yaml_file)
+
+    def _parse_candidates(self, key, delimiter='_'):
+        candidates = []
+
+        for index, candidate in enumerate(key.split(delimiter)):
+            elements = key.split(delimiter)
+            candidates.append({'key': key,
+                               'current': delimiter.join(elements[:index+1]),
+                               'next': delimiter.join(elements[index+1:])})
+
+        return candidates
+
+    def __del__(self):
+        self.yaml_file.close()
+
+
+class NotFound(Exception):
+    pass
+
+
+class FoundDict(Exception):
+    pass
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Map ENV vars to yaml')
+    parser.add_argument('-f', '--file', dest='files', action='append')
+    parser.add_argument('-p', '--prefix', dest='prefix', default='HELM_')
+    parser.add_argument('--in-place', dest='in-place', action='store_true')
+    parser.add_argument('--strict', dest='strict', action='store_true')
+    args = parser.parse_args()
+    if args.prefix and not args.prefix.endswith('_'):
+        args.prefix += '_'
+
+    main(args)
