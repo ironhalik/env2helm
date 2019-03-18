@@ -1,8 +1,8 @@
-## What
+# What
 
 Allows you to change and populate Helm Values file (or any yaml file for that matter), using env variables. The `ironhalik/env2helm` docker image comes with latest-ish Helm and kubectl for your convenience.
 
-## How
+# How
 
 Example *values.yaml*:  
 ```yaml
@@ -25,7 +25,7 @@ image:
 ```
 If you're using it in a CI environment, you can use `--in-place` flag to overwrite the input files with any changes. Alternatively, depending on your shell, you can do something along the lines of `helm install -f <(env2helm -f some-values-file.yaml)`
 
-## Usage
+# Usage
 ```
 usage: env2helm [-h] -f FILES [-p PREFIX] [--in-place] [--strict]
 
