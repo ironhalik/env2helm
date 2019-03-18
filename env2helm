@@ -85,10 +85,12 @@ class FoundDict(Exception):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Map ENV vars to yaml')
-    parser.add_argument('-f', '--file', dest='files', action='append')
-    parser.add_argument('-p', '--prefix', dest='prefix', default='HELM_')
-    parser.add_argument('--in-place', dest='in_place', action='store_true')
-    parser.add_argument('--strict', dest='strict', action='store_true')
+    required = parser.add_argument_group('required arguments')
+    optional = parser.add_argument_group('optional arguments')
+    required.add_argument('-f', '--file', dest='files', action='append', help='Files to process. Can be supplied multiple times.', required=True)
+    optional.add_argument('-p', '--prefix', dest='prefix', default='HELM_', help='Prefix to look for in env variables. Defaults to HELM')
+    optional.add_argument('--in-place', dest='in_place', action='store_true', help='Overwrite files instead of printing to stdout. Think sed -i')
+    optional.add_argument('--strict', dest='strict', action='store_true', help='Exit with non-zero status code when you no match for an env var was found')
     args = parser.parse_args()
     if args.prefix and not args.prefix.endswith('_'):
         args.prefix += '_'
