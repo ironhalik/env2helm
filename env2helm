@@ -26,7 +26,10 @@ def main(args):
                 print("CRITICAL: Found dict under {}{}. Refusing to edit".format(args.prefix, env))
                 exit(2)
 
-        values_file.dump()
+        if args.in_place:
+            values_file.write()
+        else:
+            values_file.dump()
 
 
 class ValuesFile():
@@ -84,7 +87,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Map ENV vars to yaml')
     parser.add_argument('-f', '--file', dest='files', action='append')
     parser.add_argument('-p', '--prefix', dest='prefix', default='HELM_')
-    parser.add_argument('--in-place', dest='in-place', action='store_true')
+    parser.add_argument('--in-place', dest='in_place', action='store_true')
     parser.add_argument('--strict', dest='strict', action='store_true')
     args = parser.parse_args()
     if args.prefix and not args.prefix.endswith('_'):
