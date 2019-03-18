@@ -17,7 +17,7 @@ $ export HELM_IMAGE_TAG=bionic
 $ env2helm -f values.yaml
 ```
 
-*will output*:
+will output:
 ```yaml
 image:
   repository: ubuntu
