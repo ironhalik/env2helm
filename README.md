@@ -23,7 +23,7 @@ image:
   repository: ubuntu
   tag: bionic
 ```
-If you're using it in a CI environment, you can use `--in-place` flag to overwrite the input files with any changes. Alternatively, depending on your shell, you can do something along the lines of `helm install -f <(env2helm -f some-values-file.yaml)`
+If you're using it in a CI environment, you can use `-i` or `--in-place` flag to overwrite the input files with any changes. Alternatively, depending on your shell, you can do something along the lines of `helm install -f <(env2helm -f some-values-file.yaml)`
 
 # Usage
 ```
@@ -41,8 +41,8 @@ required arguments:
 optional arguments:
   -p PREFIX, --prefix PREFIX
                         Prefix to look for in env variables. Defaults to HELM
-  --in-place            Overwrite files instead of printing to stdout. Think
+  -i, --in-place        Overwrite files instead of printing to stdout. Think
                         sed -i
-  --strict              Exit with non-zero status code when you no match for
-                        an env var was found
+  --strict              Exit with non-zero status code when an env var didnt
+                        match any yaml value
 ```
