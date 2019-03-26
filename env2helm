@@ -35,7 +35,12 @@ def main(args):
 class ValuesFile():
     def __init__(self, yaml_file):
         self.ruamel_yaml = YAML()
-        self.yaml_file = open(yaml_file, "r+")
+        try:
+            self.yaml_file = open(yaml_file, "r+")
+        except FileNotFoundError as e:
+            print("CRITICAL: Couldn't open file {}: {}".format(yaml_file, e))
+            exit(2)
+
         self.yaml_content = self.ruamel_yaml.load(self.yaml_file)
 
     def find_and_replace(self, env, value, yaml_content=None):
@@ -58,6 +63,8 @@ class ValuesFile():
         self.ruamel_yaml.dump(self.yaml_content, stdout)
 
     def write(self):
+        self.yaml_file.seek(0)
+        self.yaml_file.truncate()
         self.ruamel_yaml.dump(self.yaml_content, self.yaml_file)
 
     def _parse_candidates(self, key, delimiter='_'):
@@ -72,7 +79,10 @@ class ValuesFile():
         return candidates
 
     def __del__(self):
-        self.yaml_file.close()
+        try:
+            self.yaml_file.close()
+        except Exception as e:
+            pass
 
 
 class NotFound(Exception):
