@@ -2,7 +2,7 @@
 import os
 import argparse
 from sys import stdout
-from ruamel.yaml import YAML
+from ruamel.yaml import YAML, scalarstring
 
 
 def main(args):
@@ -15,7 +15,7 @@ def main(args):
         values_file = ValuesFile(file)
         for env in envs:
             try:
-                values_file.find_and_replace(env, envs[env])
+                values_file.find_and_replace(env, envs[env], stringify=args.stringify)
             except NotFound:
                 if args.strict:
                     print("CRITICAL: Couldn't find variable for {}{}".format(args.prefix, env))
@@ -43,7 +43,7 @@ class ValuesFile():
 
         self.yaml_content = self.ruamel_yaml.load(self.yaml_file)
 
-    def find_and_replace(self, env, value, yaml_content=None):
+    def find_and_replace(self, env, value, yaml_content=None, stringify=False):
         if not yaml_content:
             yaml_content = self.yaml_content
 
@@ -55,7 +55,10 @@ class ValuesFile():
                     else:
                         if isinstance(yaml_content[node], dict):
                             raise FoundDict
-                        yaml_content[node] = value
+                        if args.stringify:
+                            yaml_content[node] = scalarstring.DoubleQuotedScalarString(str(value))
+                        else:
+                            yaml_content[node] = value
                         return
         raise NotFound()
 
@@ -101,6 +104,7 @@ if __name__ == "__main__":
     optional.add_argument('-p', '--prefix', dest='prefix', default='ENV2HELM_', help='Prefix to look for in env variables. Defaults to ENV2HELM_')
     optional.add_argument('-i', '--in-place', dest='in_place', action='store_true', help='Overwrite files instead of printing to stdout. Think sed -i')
     optional.add_argument('-s', '--strict', dest='strict', action='store_true', help='Exit with status code 2 if a prefixed env var did not match any yaml key')
+    optional.add_argument('-t', '--to-string', dest='stringify', action='store_true', help='Insert values as strings, surrounded by quotation marks')
     args = parser.parse_args()
     if args.prefix and not args.prefix.endswith('_'):
         args.prefix += '_'
