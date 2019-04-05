@@ -1,6 +1,6 @@
 FROM alpine:3.9
 
-RUN apk add --no-cache curl ca-certificates python3 &&\
+RUN apk add --no-cache curl ca-certificates python3 bash &&\
     pip3 --no-cache-dir install ruamel.yaml
 
 ENV helm_version=v2.13.1
@@ -22,3 +22,5 @@ RUN curl -s https://storage.googleapis.com/kubernetes-release/release/${kubectl_
     rm -rf /tmp/*
 
 COPY env2helm /usr/local/bin/
+
+CMD ["/bin/bash"]
