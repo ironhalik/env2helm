@@ -3,8 +3,8 @@ FROM alpine:3.9
 RUN apk add --no-cache curl ca-certificates python3 &&\
     pip3 --no-cache-dir install ruamel.yaml
 
-ENV helm_version=v2.13.0
-ENV helm_checksum=15eca6ad225a8279de80c7ced42305e24bc5ac60bb7d96f2d2fa4af86e02c794
+ENV helm_version=v2.13.1
+ENV helm_checksum=c1967c1dfcd6c921694b80ededdb9bd1beb27cb076864e58957b1568bc98925a
 
 ENV kubectl_version=v1.13.4
 ENV kubectl_checksum=92de2edbc8c21cfce6f70daa48e95560274a7413a51a6f8c348d974490fd1338

@@ -98,9 +98,9 @@ if __name__ == "__main__":
     required = parser.add_argument_group('required arguments')
     optional = parser.add_argument_group('optional arguments')
     required.add_argument('-f', '--file', dest='files', action='append', help='Files to process. Can be supplied multiple times.', required=True)
-    optional.add_argument('-p', '--prefix', dest='prefix', default='HELM_', help='Prefix to look for in env variables. Defaults to HELM')
+    optional.add_argument('-p', '--prefix', dest='prefix', default='HELM_', help='Prefix to look for in env variables. Defaults to ENV2HELM')
     optional.add_argument('-i', '--in-place', dest='in_place', action='store_true', help='Overwrite files instead of printing to stdout. Think sed -i')
-    optional.add_argument('--strict', dest='strict', action='store_true', help='Exit with non-zero status code when an env var didnt match any yaml value')
+    optional.add_argument('-s', '--strict', dest='strict', action='store_true', help='Exit with non-zero status code when an env var didnt match any yaml value')
     args = parser.parse_args()
     if args.prefix and not args.prefix.endswith('_'):
         args.prefix += '_'
