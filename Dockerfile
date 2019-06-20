@@ -23,4 +23,6 @@ RUN curl -s https://storage.googleapis.com/kubernetes-release/release/${kubectl_
 
 COPY env2helm /usr/local/bin/
 
+SHELL ["/bin/bash", "-c"]
+
 CMD ["/bin/bash"]
