@@ -1,6 +1,6 @@
 FROM alpine:3.9
 
-RUN apk add --no-cache curl ca-certificates python3 bash &&\
+RUN apk add --no-cache curl ca-certificates python3 bash jq &&\
     pip3 --no-cache-dir install ruamel.yaml
 
 ENV helm_version=v2.14.1
