@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-set -e
 
 function _usage {
   echo "The script checks for pods to reach ready status."
@@ -49,6 +48,7 @@ fi
 
 function _select_pods() {
   running_pods=$(kubectl --namespace ${namespace} get pod --no-headers --field-selector status.phase!=Terminating -o custom-columns=:metadata.name)
+  selected_pods=""
   for i in $running_pods; do
     for j in $targeted_pods; do
       if [[ "$i" == ${j} ]]; then
@@ -63,7 +63,7 @@ function _select_pods() {
 }
 
 function _wait_for_pods() {
-  kubectl wait --namespace ${namespace} --timeout=10s --for=condition=ready ${selected_pods} || true
+  kubectl wait --namespace ${namespace} --timeout=5s --for=condition=ready ${selected_pods}
 }
 
 _select_pods
@@ -72,7 +72,7 @@ pod_status=$?
 
 iteration=0
 until [ ${pod_status} -eq 0 ] || [ ${iteration} -ge ${timeout} ]; do
-  sleep 30
+  sleep 24
   let iteration=${iteration}+1
   _select_pods
   _wait_for_pods
