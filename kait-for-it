@@ -41,24 +41,37 @@ while [ "$1" != "" ]; do
   shift
 done
 
-running_pods=$(kubectl --namespace ${namespace} get pod --no-headers --field-selector status.phase!=Terminating -o custom-columns=:metadata.name)
+let timeout=${timeout:-10}*2
 
-for i in $running_pods; do
-  for j in $targeted_pods; do
-    if [[ "$i" == ${j} ]]; then
-      selected_pods="pod/$i $selected_pods"
-    fi
+function _get_selected_pods() {
+  running_pods=$(kubectl --namespace ${namespace} get pod --no-headers --field-selector status.phase!=Terminating -o custom-columns=:metadata.name)
+  for i in $running_pods; do
+    for j in $targeted_pods; do
+      if [[ "$i" == ${j} ]]; then
+        selected_pods="pod/$i $selected_pods"
+      fi
+    done
   done
-done
+  if [ -z $selected_pods ]; then
+    echo "No pods found. Failing."
+    exit 2
+  fi
+}
 
-iteration=0
-kubectl wait --namespace ${namespace} --timeout=10s --for=condition=ready ${selected_pods}
+function _wait_for_pods() {
+  kubectl wait --namespace ${namespace} --timeout=10s --for=condition=ready ${selected_pods}
+}
+
+_get_selected_pods
+_wait_for_pods
 pod_status=$?
 
+iteration=0
 until [ ${pod_status} -eq 0 ] || [ ${iteration} -ge ${timeout:-10} ]; do
-  sleep 60
+  sleep 30
   let iteration=${iteration}+1
-  kubectl wait --namespace ${namespace} --timeout=10s --for=condition=ready ${selected_pods}
+  _get_selected_pods
+  _wait_for_pods
   pod_status=$?
 done
 
