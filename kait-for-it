@@ -63,7 +63,7 @@ function _select_pods() {
 }
 
 function _wait_for_pods() {
-  kubectl wait --namespace ${namespace} --timeout=10s --for=condition=ready ${selected_pods}
+  kubectl wait --namespace ${namespace} --timeout=10s --for=condition=ready ${selected_pods} || true
 }
 
 _select_pods
@@ -71,7 +71,7 @@ _wait_for_pods
 pod_status=$?
 
 iteration=0
-until [ ${pod_status} -eq 0 ] || [ ${iteration} -ge ${timeout:-10} ]; do
+until [ ${pod_status} -eq 0 ] || [ ${iteration} -ge ${timeout} ]; do
   sleep 30
   let iteration=${iteration}+1
   _select_pods
