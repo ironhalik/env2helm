@@ -27,7 +27,7 @@ If you're using it in a CI environment, you can use `-i` or `--in-place` flag to
 
 # Usage
 ```
-usage: env2helm [-h] -f FILES [-p PREFIX] [--in-place] [--strict]
+usage: env2helm [-h] -f FILES [-p PREFIX] [-i] [-s] [-t]
 
 Map ENV vars to yaml
 
@@ -40,9 +40,12 @@ required arguments:
 
 optional arguments:
   -p PREFIX, --prefix PREFIX
-                        Prefix to look for in env variables. Defaults to ENV2HELM_
+                        Prefix to look for in env variables. Defaults to
+                        ENV2HELM_
   -i, --in-place        Overwrite files instead of printing to stdout. Think
                         sed -i
-  --strict              Exit with non-zero status code when an env var didnt
-                        match any yaml value
+  -s, --strict          Exit with status code 2 if a prefixed env var did not
+                        match any yaml key
+  -t, --to-string       Insert values as strings, surrounded by quotation
+                        marks
 ```
