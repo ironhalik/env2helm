@@ -12,8 +12,8 @@ image:
 ```
 
 ```console
-$ export HELM_IMAGE_REPOSITORY=ubuntu  
-$ export HELM_IMAGE_TAG=bionic  
+$ export ENV2HELM_IMAGE_REPOSITORY=ubuntu
+$ export ENV2HELM_IMAGE_TAG=bionic
 $ env2helm -f values.yaml
 ```
 
@@ -40,7 +40,7 @@ required arguments:
 
 optional arguments:
   -p PREFIX, --prefix PREFIX
-                        Prefix to look for in env variables. Defaults to HELM
+                        Prefix to look for in env variables. Defaults to ENV2HELM_
   -i, --in-place        Overwrite files instead of printing to stdout. Think
                         sed -i
   --strict              Exit with non-zero status code when an env var didnt
