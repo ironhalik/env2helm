@@ -1,0 +1,33 @@
+name: Docker build
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - v*
+
+jobs:
+  main:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: git pull
+        uses: actions/checkout@v2
+
+      - name: docker login
+        run: echo "${{ secrets.DOCKER_HUB_PASS }}" | docker login -u ${{ secrets.DOCKER_HUB_USER }} --password-stdin
+
+      - name: docker build
+        run: docker build --tag ironhalik/env2helm .
+
+      - name: docker push
+        if: github.ref == 'refs/heads/master'
+        run: |
+          docker tag ironhalik/env2helm ironhalik/env2helm:latest
+          docker push ironhalik/env2helm:latest
+
+      - name: Push tagged image
+        if: github.ref == 'refs/tags/v*'
+        run: |
+          docker tag ironhalik/env2helm ironhalik/env2helm:${GITHUB_REF##*/}
+          docker push ironhalik/env2helm:${GITHUB_REF##*/}
