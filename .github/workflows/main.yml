@@ -1,4 +1,4 @@
-name: Docker build
+name: Build
 
 on:
   push:
@@ -11,17 +11,14 @@ jobs:
   main:
     runs-on: ubuntu-18.04
     steps:
-      - name: git pull
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-      - name: docker login
-        run: echo "${{ secrets.DOCKER_HUB_PASS }}" | docker login -u ironhalik --password-stdin
-
-      - name: docker build
+      - name: build
         run: docker build --tag ironhalik/env2helm .
 
-      - name: docker push
+      - name: push
         run: |
+          echo "${{ secrets.DOCKER_HUB_PASS }}" | docker login -u ironhalik --password-stdin
           [ ${GITHUB_REF##*/} == "master" ] && TAG="latest" || TAG=${GITHUB_REF##*/}
           echo "Pushing tag: ${TAG}"
           docker tag ironhalik/env2helm ironhalik/env2helm:${TAG}
