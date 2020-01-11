@@ -21,8 +21,8 @@ jobs:
         run: docker build --tag ironhalik/env2helm .
 
       - name: docker push
-        if: success() && github.ref == 'refs/heads/master'
         run: |
           [ ${GITHUB_REF##*/} == "master" ] && TAG="latest" || TAG=${GITHUB_REF##*/}
+          echo "Pushing tag: ${TAG}"
           docker tag ironhalik/env2helm ironhalik/env2helm:${TAG}
           docker push ironhalik/env2helm:${TAG}
