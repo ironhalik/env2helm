@@ -18,9 +18,7 @@ jobs:
         run: echo "${{ secrets.DOCKER_HUB_PASS }}" | docker login -u ironhalik --password-stdin
 
       - name: docker build
-        run: |
-          ls -al /var/lib/docker
-          docker build --tag ironhalik/env2helm .
+        run: docker build --tag ironhalik/env2helm .
 
       - name: docker push
         if: success() && github.ref == 'refs/heads/master'
