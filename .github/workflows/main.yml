@@ -11,12 +11,13 @@ jobs:
   main:
     runs-on: ubuntu-18.04
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
-      - name: build
+      - name: Build
         run: docker build --tag ironhalik/env2helm .
 
-      - name: push
+      - name: Push
         run: |
           echo "${{ secrets.DOCKER_HUB_PASS }}" | docker login -u ironhalik --password-stdin
           [ ${GITHUB_REF##*/} == "master" ] && TAG="latest" || TAG=${GITHUB_REF##*/}
