@@ -18,16 +18,13 @@ jobs:
         run: echo "${{ secrets.DOCKER_HUB_PASS }}" | docker login -u ironhalik --password-stdin
 
       - name: docker build
-        run: docker build --tag ironhalik/env2helm .
+        run: |
+          ls -al /var/lib/docker
+          docker build --tag ironhalik/env2helm .
 
       - name: docker push
         if: success() && github.ref == 'refs/heads/master'
         run: |
-          docker tag ironhalik/env2helm ironhalik/env2helm:latest
-          docker push ironhalik/env2helm:latest
-
-      - name: Push tagged image
-        if: success() && contains(github.ref, 'refs/tags/v')
-        run: |
-          docker tag ironhalik/env2helm ironhalik/env2helm:${GITHUB_REF##*/}
-          docker push ironhalik/env2helm:${GITHUB_REF##*/}
+          [ ${GITHUB_REF##*/} == "master" ] && TAG="latest" || TAG=${GITHUB_REF##*/}
+          docker tag ironhalik/env2helm ironhalik/env2helm:${TAG}
+          docker push ironhalik/env2helm:${TAG}
