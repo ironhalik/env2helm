@@ -21,8 +21,7 @@ RUN curl -s https://storage.googleapis.com/kubernetes-release/release/${kubectl_
     mv /tmp/linux-amd64/helm /usr/local/bin &&\
     rm -rf /tmp/*
 
-COPY env2helm /usr/local/bin/
-COPY kait-for-it /usr/local/bin/
+COPY env2helm kait-for-it parse-kube-config /usr/local/bin/
 
 SHELL ["/bin/bash", "-c"]
 
